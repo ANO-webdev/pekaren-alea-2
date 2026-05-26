@@ -1,0 +1,2104 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pekáreň Alea | Banská Bystrica</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cream: #F6F0E6;
+            --cream-deep: #EDE3D2;
+            --ink: #1C1208;
+            --warm-white: #FBF8F3;
+            --gold: #B8793A;
+            --gold-light: #D49A5E;
+            --copper: #9B4E30;
+            --sand: #CFC0A4;
+            --smoke: #F7F3EC;
+            --muted: #7A6A58;
+            --border: rgba(28, 18, 8, 0.11);
+            --green: #25D366;
+            --green-dark: #1ea252;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            background-color: var(--cream);
+            color: var(--ink);
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 300;
+            line-height: 1.75;
+            overflow-x: hidden;
+        }
+
+        /* ── GRAIN OVERLAY ── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 0.45;
+        }
+
+        /* ══════════════════════════════
+           HEADER / NAV
+        ══════════════════════════════ */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 500;
+            background: rgba(246, 240, 230, 0.94);
+            backdrop-filter: blur(22px);
+            -webkit-backdrop-filter: blur(22px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 6%;
+            height: 74px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: box-shadow 0.3s;
+        }
+
+        header.elevated {
+            box-shadow: 0 2px 30px rgba(28, 18, 8, 0.07);
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--ink);
+        }
+        .logo em {
+            font-style: italic;
+            font-weight: 400;
+            color: var(--gold);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nav-link {
+            background: none;
+            border: none;
+            color: var(--ink);
+            font-family: 'DM Mono', monospace;
+            font-size: 0.7rem;
+            font-weight: 300;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            cursor: pointer;
+            padding: 8px 14px;
+            transition: color 0.25s, opacity 0.25s;
+            opacity: 0.55;
+        }
+        .nav-link:hover { opacity: 1; }
+        .nav-link.active-tab { opacity: 1; color: var(--gold); }
+
+        .cart-btn {
+            background: var(--ink) !important;
+            color: var(--cream) !important;
+            border-radius: 2px;
+            padding: 9px 18px !important;
+            opacity: 1 !important;
+            transition: background 0.25s !important;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+        }
+        .cart-btn:hover { background: var(--copper) !important; }
+
+        .cart-count-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 17px; height: 17px;
+            background: var(--gold);
+            border-radius: 50%;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.58rem;
+            font-weight: 400;
+            color: #fff;
+            transition: transform 0.2s;
+        }
+        .cart-count-badge.bump { transform: scale(1.4); }
+
+        /* Mobile nav toggle */
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 4px;
+            background: none;
+            border: none;
+        }
+        .menu-toggle span {
+            display: block;
+            width: 22px; height: 1.5px;
+            background: var(--ink);
+            transition: all 0.3s;
+        }
+
+        /* Mobile overlay nav */
+        .mobile-nav {
+            position: fixed;
+            inset: 0;
+            background: var(--ink);
+            z-index: 600;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.35s ease;
+        }
+        .mobile-nav.open { opacity: 1; pointer-events: all; }
+        .mobile-nav .close-btn {
+            position: absolute;
+            top: 28px; right: 6%;
+            background: none;
+            border: none;
+            color: rgba(246,240,230,0.6);
+            font-size: 1.6rem;
+            cursor: pointer;
+            font-family: 'DM Mono', monospace;
+            transition: color 0.2s;
+        }
+        .mobile-nav .close-btn:hover { color: var(--gold-light); }
+        .mobile-nav button {
+            background: none;
+            border: none;
+            color: rgba(246,240,230,0.7);
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            font-weight: 400;
+            cursor: pointer;
+            transition: color 0.25s;
+            padding: 10px;
+            letter-spacing: -0.01em;
+        }
+        .mobile-nav button:hover { color: var(--gold-light); }
+
+        /* ══════════════════════════════
+           TAB SYSTEM
+        ══════════════════════════════ */
+        .tab-content { display: none; }
+        .tab-content.active {
+            display: block;
+            animation: pageReveal 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+
+        @keyframes pageReveal {
+            from { opacity: 0; transform: translateY(18px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ══════════════════════════════
+           HOME — HERO SPLIT
+        ══════════════════════════════ */
+        .hero {
+            min-height: calc(100vh - 74px);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-left {
+            padding: 80px 9% 80px 6%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .hero-eyebrow {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.67rem;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 28px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .hero-eyebrow::before {
+            content: '';
+            display: block;
+            width: 32px;
+            height: 1px;
+            background: var(--gold);
+            flex-shrink: 0;
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.8rem, 5vw, 5rem);
+            font-weight: 400;
+            line-height: 1.1;
+            margin-bottom: 28px;
+            letter-spacing: -0.02em;
+        }
+        .hero h1 em {
+            font-style: italic;
+            color: var(--gold);
+        }
+
+        .hero-sub {
+            font-size: 1.05rem;
+            color: var(--muted);
+            max-width: 420px;
+            line-height: 1.85;
+            margin-bottom: 44px;
+            font-weight: 300;
+        }
+
+        .hero-cta-row {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--ink);
+            color: var(--cream);
+            border: none;
+            padding: 15px 30px;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.72rem;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 2px;
+            transition: background 0.28s, gap 0.28s;
+            text-decoration: none;
+        }
+        .btn-primary:hover { background: var(--copper); gap: 18px; }
+        .btn-primary .arr { transition: transform 0.28s; }
+        .btn-primary:hover .arr { transform: translateX(4px); }
+
+        .btn-ghost {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--muted);
+            background: none;
+            border: none;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.68rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            cursor: pointer;
+            padding: 0;
+            transition: color 0.25s;
+            text-decoration: none;
+        }
+        .btn-ghost:hover { color: var(--gold); }
+
+        .hero-stats {
+            display: flex;
+            gap: 36px;
+            margin-top: 58px;
+            padding-top: 40px;
+            border-top: 1px solid var(--border);
+        }
+
+        .stat-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--gold);
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-top: 5px;
+        }
+
+        .hero-right {
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-right img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            object-position: center;
+            display: block;
+            transition: transform 9s ease;
+        }
+        .hero-right:hover img { transform: scale(1.04); }
+
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(160deg, rgba(28,18,8,0.12) 0%, transparent 60%);
+        }
+
+        .hero-badge {
+            position: absolute;
+            bottom: 36px; right: 36px;
+            width: 108px; height: 108px;
+            background: var(--cream);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            box-shadow: 0 8px 28px rgba(28,18,8,0.14);
+            border: 1px solid var(--border);
+        }
+        .hero-badge span:first-child {
+            font-family: 'Playfair Display', serif;
+            font-size: 0.65rem;
+            font-style: italic;
+            color: var(--muted);
+        }
+        .hero-badge strong {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--copper);
+        }
+
+        /* ── FEATURE STRIP ── */
+        .feature-strip {
+            background: var(--ink);
+            padding: 18px 6%;
+            display: flex;
+            justify-content: center;
+            gap: 56px;
+            overflow: hidden;
+            flex-wrap: wrap;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: rgba(246,240,230,0.7);
+            white-space: nowrap;
+        }
+        .feature-item .dot {
+            width: 5px; height: 5px;
+            background: var(--gold);
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        /* ── ABOUT SECTION ── */
+        .about-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 520px;
+        }
+
+        .about-img {
+            position: relative;
+            overflow: hidden;
+        }
+        .about-img img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.8s ease;
+        }
+        .about-img:hover img { transform: scale(1.04); }
+
+        .about-img-label {
+            position: absolute;
+            bottom: 28px; left: 28px;
+            background: rgba(246,240,230,0.93);
+            backdrop-filter: blur(8px);
+            padding: 14px 20px;
+            border-left: 3px solid var(--gold);
+        }
+        .about-img-label strong {
+            display: block;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            font-weight: 400;
+            color: var(--ink);
+        }
+        .about-img-label small {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.62rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--gold);
+        }
+
+        .about-text {
+            background: var(--smoke);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 80px 9%;
+        }
+
+        .eyebrow {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.64rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 20px;
+        }
+
+        .about-text h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.9rem, 3vw, 3rem);
+            font-weight: 400;
+            line-height: 1.2;
+            margin-bottom: 26px;
+            letter-spacing: -0.01em;
+        }
+        .about-text h2 em { font-style: italic; color: var(--gold); }
+
+        .about-text p {
+            font-size: 1rem;
+            line-height: 1.9;
+            color: var(--muted);
+            margin-bottom: 16px;
+            max-width: 440px;
+        }
+
+        .about-stats {
+            display: flex;
+            gap: 36px;
+            margin-top: 38px;
+            padding-top: 38px;
+            border-top: 1px solid var(--sand);
+        }
+        .about-stat strong {
+            display: block;
+            font-family: 'Playfair Display', serif;
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: var(--gold);
+            line-height: 1;
+        }
+        .about-stat span {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        /* ── MENU PREVIEW (on homepage) ── */
+        .preview-section {
+            padding: 100px 6%;
+            background: var(--cream);
+        }
+
+        .section-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 60px;
+        }
+
+        .section-head h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 3.5vw, 3.4rem);
+            font-weight: 400;
+            line-height: 1.15;
+            letter-spacing: -0.01em;
+        }
+        .section-head h2 em { font-style: italic; color: var(--gold); }
+
+        .section-head-note {
+            max-width: 260px;
+            font-size: 0.88rem;
+            line-height: 1.8;
+            color: var(--muted);
+            text-align: right;
+        }
+
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+        }
+
+        .preview-card {
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            background: var(--ink);
+        }
+        .preview-card-img {
+            width: 100%;
+            aspect-ratio: 4/5;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.7s cubic-bezier(0.22,1,0.36,1), opacity 0.4s;
+            opacity: 0.88;
+        }
+        .preview-card:hover .preview-card-img { transform: scale(1.07); opacity: 0.65; }
+
+        .preview-card-body {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            padding: 40px 28px 28px;
+            background: linear-gradient(0deg, rgba(28,18,8,0.9) 0%, transparent 100%);
+        }
+        .preview-card-tag {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.58rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--gold-light);
+            margin-bottom: 8px;
+            display: block;
+        }
+        .preview-card-body h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.7rem;
+            font-weight: 400;
+            color: #fff;
+            line-height: 1.15;
+            margin-bottom: 8px;
+        }
+        .preview-card-body p {
+            font-size: 0.82rem;
+            color: rgba(255,255,255,0.6);
+            line-height: 1.6;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, opacity 0.4s;
+            opacity: 0;
+        }
+        .preview-card:hover .preview-card-body p { max-height: 80px; opacity: 1; }
+
+        /* ── REVIEWS ── */
+        .reviews-section {
+            padding: 100px 6%;
+            background: var(--ink);
+            position: relative;
+            overflow: hidden;
+        }
+        .reviews-section::before {
+            content: '"';
+            font-family: 'Playfair Display', serif;
+            font-size: 36rem;
+            color: rgba(184,121,58,0.05);
+            position: absolute;
+            top: -80px; left: -20px;
+            line-height: 1;
+            pointer-events: none;
+        }
+
+        .reviews-section .eyebrow { color: var(--gold-light); margin-bottom: 14px; }
+
+        .reviews-section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 3.5vw, 3rem);
+            font-weight: 400;
+            color: #fff;
+            margin-bottom: 56px;
+            letter-spacing: -0.01em;
+        }
+        .reviews-section h2 em { font-style: italic; color: var(--gold-light); }
+
+        .reviews-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .review-card {
+            background: rgba(255,255,255,0.035);
+            border: 1px solid rgba(255,255,255,0.07);
+            padding: 30px;
+            transition: background 0.3s, border-color 0.3s;
+        }
+        .review-card:hover {
+            background: rgba(184,121,58,0.08);
+            border-color: rgba(184,121,58,0.22);
+        }
+
+        .review-stars { display: flex; gap: 3px; margin-bottom: 18px; }
+        .star { color: var(--gold); font-size: 0.85rem; }
+
+        .review-card blockquote {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 1.1rem;
+            color: rgba(255,255,255,0.82);
+            line-height: 1.75;
+            margin-bottom: 22px;
+            quotes: none;
+        }
+
+        .reviewer { display: flex; align-items: center; gap: 12px; }
+        .reviewer-avatar {
+            width: 34px; height: 34px;
+            border-radius: 50%;
+            background: var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Playfair Display', serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #fff;
+        }
+        .reviewer-info strong {
+            display: block;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.85);
+        }
+        .reviewer-info span {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.58rem;
+            letter-spacing: 0.1em;
+            color: rgba(255,255,255,0.3);
+        }
+
+        /* ══════════════════════════════
+           MENU TAB
+        ══════════════════════════════ */
+        #menu-tab {
+            padding: 60px 6% 90px;
+            background: var(--cream);
+            min-height: calc(100vh - 74px);
+        }
+
+        .menu-tab-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 50px;
+            padding-bottom: 28px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .menu-tab-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 4vw, 3.2rem);
+            font-weight: 400;
+            line-height: 1.15;
+            letter-spacing: -0.01em;
+        }
+        .menu-tab-header h2 em { font-style: italic; color: var(--gold); }
+
+        .menu-filter {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--ink);
+            padding: 8px 18px;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.22s;
+            border-radius: 2px;
+        }
+        .filter-btn.active, .filter-btn:hover {
+            background: var(--ink);
+            color: var(--cream);
+            border-color: var(--ink);
+        }
+
+        /* Menu grid */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2px;
+        }
+
+        .product-card {
+            background: var(--smoke);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.36s cubic-bezier(0.22,1,0.36,1);
+        }
+        .product-card:hover { transform: translateY(-4px); }
+        .product-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border: 1px solid transparent;
+            transition: border-color 0.28s;
+            pointer-events: none;
+        }
+        .product-card:hover::after { border-color: var(--gold); }
+
+        .product-img-wrap {
+            height: 240px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .product-img-wrap::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(28,18,8,0);
+            transition: background 0.4s;
+        }
+        .product-card:hover .product-img-wrap::after { background: rgba(28,18,8,0.07); }
+
+        .product-badge {
+            position: absolute;
+            top: 16px; left: 16px;
+            background: var(--cream);
+            padding: 4px 11px;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.58rem;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--copper);
+            z-index: 2;
+            border-radius: 2px;
+        }
+
+        .product-info {
+            padding: 26px 26px 22px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+        .product-info h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.45rem;
+            font-weight: 400;
+            letter-spacing: -0.01em;
+            margin-bottom: 8px;
+            color: var(--ink);
+        }
+        .product-info p {
+            font-size: 0.92rem;
+            color: var(--muted);
+            line-height: 1.8;
+            flex-grow: 1;
+            margin-bottom: 22px;
+        }
+
+        .product-meta {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding-top: 18px;
+            border-top: 1px solid var(--border);
+        }
+
+        .price {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--ink);
+            letter-spacing: -0.02em;
+        }
+        .price .currency {
+            font-size: 0.85rem;
+            font-weight: 400;
+            color: var(--muted);
+            margin-right: 2px;
+        }
+
+        .add-btn {
+            background: var(--ink);
+            color: var(--cream);
+            border: none;
+            padding: 10px 20px;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.63rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 2px;
+            transition: background 0.25s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .add-btn:hover { background: var(--copper); }
+        .add-btn.added { background: #3a8a3a; }
+
+        /* ══════════════════════════════
+           CART TAB
+        ══════════════════════════════ */
+        #cart-tab {
+            min-height: calc(100vh - 74px);
+            background: var(--cream);
+        }
+
+        #cart-inner { padding: 60px 6% 90px; }
+
+        .cart-layout {
+            display: grid;
+            grid-template-columns: 1fr 360px;
+            gap: 40px;
+            align-items: start;
+        }
+
+        .cart-header {
+            display: flex;
+            align-items: baseline;
+            gap: 20px;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+        }
+        .cart-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.4rem;
+            font-weight: 400;
+            letter-spacing: -0.01em;
+        }
+        .cart-count-label {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 22px 0;
+            border-bottom: 1px solid var(--border);
+            gap: 20px;
+        }
+        .cart-item-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.15rem;
+            font-weight: 400;
+            margin-bottom: 4px;
+        }
+        .cart-item-detail {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.62rem;
+            letter-spacing: 0.1em;
+            color: var(--muted);
+        }
+        .cart-item-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex-shrink: 0;
+        }
+        .cart-item-total {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--ink);
+            min-width: 80px;
+            text-align: right;
+        }
+
+        .qty-controls {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid var(--border);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .qty-btn {
+            background: none;
+            border: none;
+            width: 32px; height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--ink);
+            transition: background 0.2s, color 0.2s;
+        }
+        .qty-btn:hover { background: var(--ink); color: var(--cream); }
+
+        .qty-num {
+            width: 28px;
+            text-align: center;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.78rem;
+        }
+        .remove-btn {
+            background: none;
+            border: none;
+            color: var(--muted);
+            font-family: 'DM Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: color 0.2s;
+            padding: 0;
+        }
+        .remove-btn:hover { color: var(--copper); }
+
+        /* Order panel */
+        .order-panel {
+            background: var(--ink);
+            color: var(--cream);
+            padding: 34px;
+            border-radius: 2px;
+            height: fit-content;
+            position: sticky;
+            top: 94px;
+        }
+        .order-panel-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.35rem;
+            font-weight: 400;
+            font-style: italic;
+            margin-bottom: 26px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.68rem;
+            letter-spacing: 0.09em;
+            margin-bottom: 12px;
+            opacity: 0.68;
+        }
+        .summary-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-top: 18px;
+            padding-top: 18px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 24px;
+        }
+        .summary-total-label {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            opacity: 0.55;
+        }
+        .summary-total-amount {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.1rem;
+            font-weight: 700;
+        }
+
+        .checkout-whatsapp {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            background: var(--green);
+            color: #fff;
+            border: none;
+            padding: 15px;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.68rem;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 2px;
+            transition: background 0.25s;
+            margin-bottom: 10px;
+        }
+        .checkout-whatsapp:hover { background: var(--green-dark); }
+
+        .checkout-note {
+            text-align: center;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.58rem;
+            letter-spacing: 0.09em;
+            opacity: 0.38;
+            line-height: 1.6;
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 90px 0;
+        }
+        .empty-cart-icon { font-size: 3.5rem; opacity: 0.18; margin-bottom: 20px; }
+        .empty-cart h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 400;
+            font-style: italic;
+            color: var(--muted);
+            margin-bottom: 10px;
+        }
+        .empty-cart p { color: var(--muted); font-size: 0.95rem; margin-bottom: 30px; }
+        .empty-cart button {
+            background: var(--ink);
+            color: var(--cream);
+            border: none;
+            padding: 13px 28px;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.68rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 2px;
+            transition: background 0.25s;
+        }
+        .empty-cart button:hover { background: var(--copper); }
+
+        /* ══════════════════════════════
+           CONTACT TAB
+        ══════════════════════════════ */
+        #contact-tab {
+            min-height: calc(100vh - 74px);
+            background: var(--cream);
+            padding: 70px 6% 90px;
+        }
+
+        .contact-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: start;
+        }
+
+        .contact-info h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 3vw, 3rem);
+            font-weight: 400;
+            letter-spacing: -0.01em;
+            margin-bottom: 8px;
+        }
+        .contact-info h2 em { font-style: italic; color: var(--gold); }
+
+        .contact-desc {
+            font-size: 1rem;
+            color: var(--muted);
+            line-height: 1.85;
+            margin-bottom: 50px;
+            max-width: 420px;
+        }
+
+        .contact-block {
+            margin-bottom: 36px;
+        }
+        .contact-block-label {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 10px;
+        }
+        .contact-block-val {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.05rem;
+            color: var(--ink);
+            line-height: 1.7;
+        }
+
+        .hours-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+        }
+        .hours-table tr td {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.92rem;
+            color: var(--ink);
+        }
+        .hours-table tr td:last-child {
+            text-align: right;
+            color: var(--muted);
+            font-family: 'DM Mono', monospace;
+            font-size: 0.68rem;
+            letter-spacing: 0.08em;
+        }
+        .hours-table tr.today td {
+            color: var(--gold);
+            font-weight: 500;
+        }
+        .hours-table tr.today td:last-child { color: var(--gold); }
+
+        /* Contact form */
+        .contact-form-wrap {
+            background: var(--smoke);
+            padding: 44px;
+        }
+        .contact-form-wrap h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.7rem;
+            font-weight: 400;
+            letter-spacing: -0.01em;
+            margin-bottom: 30px;
+        }
+        .contact-form-wrap h3 em { font-style: italic; color: var(--gold); }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 13px 16px;
+            background: var(--cream);
+            border: 1px solid var(--border);
+            border-radius: 2px;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1rem;
+            color: var(--ink);
+            outline: none;
+            transition: border-color 0.25s;
+            appearance: none;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: var(--gold);
+        }
+        .form-group textarea { resize: vertical; min-height: 110px; }
+
+        .form-submit {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--ink);
+            color: var(--cream);
+            border: none;
+            padding: 14px 28px;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 2px;
+            transition: background 0.25s;
+            margin-top: 8px;
+        }
+        .form-submit:hover { background: var(--copper); }
+
+        .contact-success {
+            display: none;
+            background: var(--cream);
+            border: 1px solid var(--gold);
+            border-left: 4px solid var(--gold);
+            padding: 18px 22px;
+            margin-top: 18px;
+            font-size: 0.95rem;
+            color: var(--ink);
+        }
+
+        /* ══════════════════════════════
+           FOOTER
+        ══════════════════════════════ */
+        footer {
+            background: var(--ink);
+            padding: 50px 6%;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            gap: 40px;
+            border-top: 1px solid rgba(255,255,255,0.04);
+        }
+
+        .footer-brand .logo {
+            color: var(--cream);
+            font-size: 1.3rem;
+        }
+        .footer-brand p {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 0.12em;
+            color: rgba(246,240,230,0.35);
+            margin-top: 8px;
+        }
+
+        .footer-center {
+            text-align: center;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.58rem;
+            letter-spacing: 0.1em;
+            color: rgba(246,240,230,0.3);
+            text-transform: uppercase;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: flex-end;
+            gap: 4px;
+        }
+        .footer-links button {
+            background: none;
+            border: none;
+            color: rgba(246,240,230,0.4);
+            font-family: 'DM Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            padding: 6px 10px;
+            transition: color 0.22s;
+        }
+        .footer-links button:hover { color: var(--gold-light); }
+
+        /* ══════════════════════════════
+           TOAST
+        ══════════════════════════════ */
+        .toast {
+            position: fixed;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--ink);
+            color: var(--cream);
+            padding: 13px 24px;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.68rem;
+            letter-spacing: 0.1em;
+            border-radius: 2px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s, transform 0.3s;
+            z-index: 999;
+            white-space: nowrap;
+            border-left: 3px solid var(--gold);
+        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        /* ══════════════════════════════
+           RESPONSIVE
+        ══════════════════════════════ */
+        @media (max-width: 960px) {
+            .hero { grid-template-columns: 1fr; min-height: auto; }
+            .hero-right { height: 55vw; min-height: 300px; }
+            .hero-left { padding: 60px 6%; }
+            .about-section { grid-template-columns: 1fr; }
+            .about-img { height: 55vw; min-height: 300px; }
+            .preview-grid { grid-template-columns: repeat(2, 1fr); }
+            .reviews-grid { grid-template-columns: repeat(2, 1fr); }
+            .cart-layout { grid-template-columns: 1fr; }
+            .order-panel { position: static; }
+            .contact-layout { grid-template-columns: 1fr; gap: 50px; }
+            footer { grid-template-columns: 1fr; text-align: center; gap: 20px; }
+            .footer-links { justify-content: center; }
+        }
+
+        @media (max-width: 640px) {
+            header { padding: 0 4%; }
+            .nav-link { padding: 8px 9px; font-size: 0.62rem; }
+            .preview-grid { grid-template-columns: 1fr; }
+            .reviews-grid { grid-template-columns: 1fr; }
+            .menu-tab-header { flex-direction: column; align-items: flex-start; gap: 18px; }
+            .section-head { flex-direction: column; align-items: flex-start; gap: 14px; }
+            .section-head-note { text-align: left; max-width: 100%; }
+            #menu-tab, #cart-tab, #contact-tab { padding: 40px 4% 60px; }
+            .contact-form-wrap { padding: 28px; }
+            .feature-strip { gap: 24px; padding: 16px 4%; }
+            .menu-toggle { display: flex; }
+            .desktop-nav { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ── MOBILE NAV OVERLAY ── -->
+    <div class="mobile-nav" id="mobileNav">
+        <button class="close-btn" onclick="closeMobileNav()">✕</button>
+        <button onclick="closeMobileNav(); switchTab('home')">Domov</button>
+        <button onclick="closeMobileNav(); switchTab('menu')">Menu</button>
+        <button onclick="closeMobileNav(); switchTab('cart')">Košík</button>
+        <button onclick="closeMobileNav(); switchTab('contact')">Kontakt</button>
+    </div>
+
+    <!-- ── HEADER ── -->
+    <header id="mainHeader">
+        <div class="logo" onclick="switchTab('home')">Pekáreň <em>Alea</em></div>
+
+        <div class="header-right desktop-nav">
+            <button class="nav-link active-tab" id="nav-home" onclick="switchTab('home', this)">Domov</button>
+            <button class="nav-link" id="nav-menu" onclick="switchTab('menu', this)">Menu</button>
+            <button class="nav-link" id="nav-contact" onclick="switchTab('contact', this)">Kontakt</button>
+            <button class="nav-link cart-btn" id="nav-cart" onclick="switchTab('cart', this)">
+                Košík&nbsp;<span class="cart-count-badge" id="cartBadge">0</span>
+            </button>
+        </div>
+
+        <button class="menu-toggle" onclick="openMobileNav()" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+    </header>
+
+    <!-- ══════════════════
+         HOME TAB
+    ══════════════════ -->
+    <div id="home-tab" class="tab-content active">
+
+        <!-- HERO -->
+        <section class="hero">
+            <div class="hero-left">
+                <div class="hero-eyebrow">Horná ul., Banská Bystrica · Est. 2019</div>
+                <h1>Pečieme<br>pre <em>historické</em><br>srdce mesta.</h1>
+                <p class="hero-sub">
+                    Remeselné chleby, kváskové bochníky a čerstvé pečivo — každé ráno upečené v centre UNESCO mesta Banská Bystrica.
+                </p>
+                <div class="hero-cta-row">
+                    <button class="btn-primary" onclick="switchTab('menu')">
+                        <span>Zobraziť menu</span>
+                        <span class="arr">→</span>
+                    </button>
+                    <button class="btn-ghost" onclick="switchTab('contact')">Kde nás nájdete</button>
+                </div>
+                <div class="hero-stats">
+                    <div>
+                        <div class="stat-num">18h</div>
+                        <div class="stat-label">Fermentácia kvásku</div>
+                    </div>
+                    <div>
+                        <div class="stat-num">100%</div>
+                        <div class="stat-label">Ručná výroba</div>
+                    </div>
+                    <div>
+                        <div class="stat-num">4.9★</div>
+                        <div class="stat-label">Hodnotenie zákazníkov</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-right">
+                <img src="100988.jpg" alt="Čerstvé remeselné pečivo Alea">
+                <div class="hero-overlay"></div>
+                <div class="hero-badge">
+                    <span>Pečieme</span>
+                    <strong>každý deň</strong>
+                </div>
+            </div>
+        </section>
+
+        <!-- FEATURE STRIP -->
+        <div class="feature-strip">
+            <div class="feature-item"><span class="dot"></span> Centrum Banskej Bystrice</div>
+            <div class="feature-item"><span class="dot"></span> Objednávka cez WhatsApp</div>
+            <div class="feature-item"><span class="dot"></span> Vyzdvihnutie do 24h</div>
+            <div class="feature-item"><span class="dot"></span> Lokálne suroviny</div>
+            <div class="feature-item"><span class="dot"></span> Bez konzervantov</div>
+        </div>
+
+        <!-- ABOUT -->
+        <section class="about-section">
+            <div class="about-img">
+                <img src="101027.png" alt="Pekáreň Alea Banská Bystrica">
+                <div class="about-img-label">
+                    <strong>Remeslo & tradícia</strong>
+                    <small>Banská Bystrica · od 2019</small>
+                </div>
+            </div>
+            <div class="about-text">
+                <div class="eyebrow">O nás</div>
+                <h2>Pečieme s <em>láskou</em><br>v historickom meste</h2>
+                <p>
+                    Pekáreň Alea otvorila svoje druhé dvere priamo v srdci UNESCO mesta Banská Bystrica. Nadviazali sme na tradíciu, ktorú sme budovali v Žiline — poctivé kváskové chleby, maslové croissanty a domáce koláče z lokálnych surovín.
+                </p>
+                <p>
+                    Každý bochník fermentujeme minimálne 18 hodín. Žiadne urýchľovače, žiadne prídavné látky — len múka, voda, soľ a čas.
+                </p>
+                <div class="about-stats">
+                    <div class="about-stat">
+                        <strong>2</strong>
+                        <span>Pobočky na Slovensku</span>
+                    </div>
+                    <div class="about-stat">
+                        <strong>30+</strong>
+                        <span>Druhov pečiva</span>
+                    </div>
+                    <div class="about-stat">
+                        <strong>5★</strong>
+                        <span>Google hodnotenie</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MENU PREVIEW -->
+        <section class="preview-section">
+            <div class="section-head">
+                <div>
+                    <div class="eyebrow">Naše produkty</div>
+                    <h2>Výber z <em>čerstvého</em><br>pečiva</h2>
+                </div>
+                <p class="section-head-note">Každý deň ráno vypečené. Vyberajte z celého sortimentu v záložke Menu.</p>
+            </div>
+            <div class="preview-grid">
+                <div class="preview-card" onclick="switchTab('menu')">
+                    <img class="preview-card-img" src="100995.png" alt="Chlieb">
+                    <div class="preview-card-body">
+                        <span class="preview-card-tag">Chlieb</span>
+                        <h3>Kváskové bochníky</h3>
+                        <p>Dlhá fermentácia, chrumkavá kôrka, vzdušná striedka.</p>
+                    </div>
+                </div>
+                <div class="preview-card" onclick="switchTab('menu')">
+                    <img class="preview-card-img" src="100990.png" alt="Croissanty">
+                    <div class="preview-card-body">
+                        <span class="preview-card-tag">Ranné pečivo</span>
+                        <h3>Maslové croissanty</h3>
+                        <p>Laminované cesto, 27 vrstiev — chrumkavé každé ráno.</p>
+                    </div>
+                </div>
+                <div class="preview-card" onclick="switchTab('menu')">
+                    <img class="preview-card-img" src="100991.png" alt="Sladké pečivo">
+                    <div class="preview-card-body">
+                        <span class="preview-card-tag">Sladká sekcia</span>
+                        <h3>Domáce koláče</h3>
+                        <p>Štrúdle, závinové tyčinky a sezónne špeciality.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- REVIEWS -->
+        <section class="reviews-section">
+            <div class="eyebrow">Zákazníci hovoria</div>
+            <h2>Prečo nás majú<br><em>ľudia radi</em></h2>
+            <div class="reviews-grid">
+                <div class="review-card">
+                    <div class="review-stars">★★★★★</div>
+                    <blockquote>Najlepší kváskový chlieb, aký som jedla v Banskej Bystrici. Kôrka chrumkavá, striedka vláčna. Každý piatok si ho objednávam vopred.</blockquote>
+                    <div class="reviewer">
+                        <div class="reviewer-avatar">M</div>
+                        <div class="reviewer-info">
+                            <strong>Marta K.</strong>
+                            <span>Google recenzia</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="review-card">
+                    <div class="review-stars">★★★★★</div>
+                    <blockquote>Croissanty ako vo Francúzsku — vrstevnaté, maslovité, vôňa je neodolateľná. Chodím sem každý týždeň na raňajky pred prácou.</blockquote>
+                    <div class="reviewer">
+                        <div class="reviewer-avatar">J</div>
+                        <div class="reviewer-info">
+                            <strong>Jakub R.</strong>
+                            <span>Google recenzia</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="review-card">
+                    <div class="review-stars">★★★★★</div>
+                    <blockquote>Objednala som svadobné koláče na mieru — dokonale krásne a ešte lepšie chutili. Prístup bol profesionálny od začiatku do konca.</blockquote>
+                    <div class="reviewer">
+                        <div class="reviewer-avatar">Z</div>
+                        <div class="reviewer-info">
+                            <strong>Zuzana P.</strong>
+                            <span>Google recenzia</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div><!-- end home-tab -->
+
+
+    <!-- ══════════════════
+         MENU TAB
+    ══════════════════ -->
+    <div id="menu-tab" class="tab-content">
+        <div class="menu-tab-header">
+            <div>
+                <div class="eyebrow">Náš sortiment</div>
+                <h2>Čerstvé <em>pečivo</em><br>každý deň</h2>
+            </div>
+            <div class="menu-filter">
+                <button class="filter-btn active" onclick="filterMenu('all', this)">Všetko</button>
+                <button class="filter-btn" onclick="filterMenu('dezerty', this)">🍰 Dezerty</button>
+                <button class="filter-btn" onclick="filterMenu('kavaren', this)">☕ Káva & nápoje</button>
+            </div>
+        </div>
+
+        <div class="menu-grid" id="menuGrid"></div>
+    </div>
+
+
+    <!-- ══════════════════
+         CART TAB
+    ══════════════════ -->
+    <div id="cart-tab" class="tab-content">
+        <div id="cart-inner"></div>
+    </div>
+
+
+    <!-- ══════════════════
+         CONTACT TAB
+    ══════════════════ -->
+    <div id="contact-tab" class="tab-content">
+        <div class="contact-layout">
+            <div class="contact-info">
+                <div class="eyebrow">Navštívte nás</div>
+                <h2>Nájdite <em>Alea</em><br>v Bystrici</h2>
+                <p class="contact-desc">
+                    Sme v centre historického mesta — pár krokov od Námestia SNP. Príďte si pre čerstvé pečivo, predbehnúť front môžete aj objednávkou cez WhatsApp.
+                </p>
+
+                <div class="contact-block">
+                    <div class="contact-block-label">Adresa</div>
+                    <div class="contact-block-val">
+                        Námestie Š. Moysesa 34/6<br>
+                        974 01 Banská Bystrica<br>
+                        <small style="font-family:'DM Mono',monospace;font-size:0.62rem;letter-spacing:0.1em;color:var(--muted);">centrum mesta</small>
+                    </div>
+                </div>
+
+                <div class="contact-block">
+                    <div class="contact-block-label">Kontakt</div>
+                    <div class="contact-block-val">
+                        +421 48 901 2345<br>
+                        bb@pekaren-alea.sk
+                    </div>
+                </div>
+
+                <div class="contact-block">
+                    <div class="contact-block-label">Otváracie hodiny</div>
+                    <table class="hours-table">
+                        <tr id="h-mon"><td>Pondelok</td><td>07:00 – 18:00</td></tr>
+                        <tr id="h-tue"><td>Utorok</td><td>07:00 – 18:00</td></tr>
+                        <tr id="h-wed"><td>Streda</td><td>07:00 – 18:00</td></tr>
+                        <tr id="h-thu"><td>Štvrtok</td><td>07:00 – 18:00</td></tr>
+                        <tr id="h-fri"><td>Piatok</td><td>07:00 – 19:00</td></tr>
+                        <tr id="h-sat"><td>Sobota</td><td>08:00 – 15:00</td></tr>
+                        <tr id="h-sun"><td>Nedeľa</td><td>Zatvorené</td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="contact-form-wrap">
+                <h3>Napíšte <em>nám</em></h3>
+                <div class="form-group">
+                    <label>Vaše meno</label>
+                    <input type="text" id="cName" placeholder="Meno a priezvisko">
+                </div>
+                <div class="form-group">
+                    <label>E-mail alebo telefón</label>
+                    <input type="text" id="cContact" placeholder="jan@example.sk alebo +421...">
+                </div>
+                <div class="form-group">
+                    <label>Predmet</label>
+                    <select id="cSubject">
+                        <option value="">Vyberte predmet</option>
+                        <option>Zákazková objednávka</option>
+                        <option>Cateringová ponuka</option>
+                        <option>Spolupráca</option>
+                        <option>Iné</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Správa</label>
+                    <textarea id="cMessage" placeholder="Napíšte nám..."></textarea>
+                </div>
+                <button class="form-submit" onclick="submitContact()">
+                    Odoslať správu <span>→</span>
+                </button>
+                <div class="contact-success" id="contactSuccess">
+                    ✓ Ďakujeme za správu! Ozveme sa vám čoskoro.
+                </div>
+            </div>
+        </div>
+
+        <!-- MAP -->
+        <div style="margin-top:60px;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);height:380px;">
+            <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2638.5!2d19.1497!3d48.7362!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zUGVrw6FyZcWIIEFsZWEsIE7DoW1lc3RpZSDFoC4gTW95c2VzYSAzNC82LCA5NzQgMDEgQmFuc2vDoSBCeXN0cmljYQ!5e0!3m2!1ssk!2ssk!4v1!5m2!1ssk!2ssk&q=N%C3%A1mestie+%C5%A0.+Moysesa+34%2F6%2C+974+01+Bansk%C3%A1+Bystrica"
+                width="100%"
+                height="380"
+                style="border:0;display:block;"
+                allowfullscreen=""
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                title="Pekáreň Alea Banská Bystrica">
+            </iframe>
+        </div>
+    </div>
+
+
+    <!-- ── FOOTER ── -->
+    <footer>
+        <div class="footer-brand">
+            <div class="logo">Pekáreň <em>Alea</em></div>
+            <p>Banská Bystrica · Pobočka č. 2</p>
+        </div>
+        <div class="footer-center">
+            © 2026 Pekáreň Alea s.r.o.<br>
+            Horná 12, 974 01 Banská Bystrica
+        </div>
+        <div class="footer-links">
+            <button onclick="switchTab('home')">Domov</button>
+            <button onclick="switchTab('menu')">Menu</button>
+            <button onclick="switchTab('contact')">Kontakt</button>
+            <a href="https://www.instagram.com/pekarenalea?igsh=eGo2eDBmdHFtbWN2" target="_blank" rel="noopener" style="background:none;border:none;color:rgba(246,240,230,0.4);font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;padding:6px 10px;transition:color 0.22s;text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                Instagram
+            </a>
+        </div>
+    </footer>
+
+    <div class="toast" id="toast"></div>
+
+
+    <script>
+    // ══════════════════════════════════════
+    //  MENU DATA
+    // ══════════════════════════════════════
+    const menuData = [
+        // CAKES & FINE DESSERTS
+        {
+            id: 'cheesecake-karamel', cat: 'dezerty', badge: 'Bestseller',
+            name: 'Cheesecake Slaný karamel',
+            desc: 'Krémový cheesecake s domácim slaným karamelom a chrumkavým sušienkovým základom.',
+            price: 3.90,
+            img: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?q=80&w=600'
+        },
+        {
+            id: 'cheesecake-malina', cat: 'dezerty', badge: null,
+            name: 'Cheesecake Malina',
+            desc: 'Ľahký cheesecake s malinovou coulis a čerstvými malinami. Sviežo kyslastý a jemne sladký.',
+            price: 3.90,
+            img: 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?q=80&w=600'
+        },
+        {
+            id: 'cheesecake-lotus', cat: 'dezerty', badge: null,
+            name: 'Cheesecake Lotus',
+            desc: 'Cheesecake s chrumkavým Lotus Biscoff základom a karamelovo-škoricovým krémom.',
+            price: 3.90,
+            img: 'https://images.unsplash.com/photo-1551529834-525807d6b4f3?q=80&w=600'
+        },
+        {
+            id: 'cheesecake-pistacia', cat: 'dezerty', badge: 'Nové',
+            name: 'Cheesecake Pistácia',
+            desc: 'Prémiový cheesecake s pistáciovým krémom a drvou pistáciou. Luxusná pochúťka.',
+            price: 4.20,
+            img: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?q=80&w=600'
+        },
+        {
+            id: 'pavlova', cat: 'dezerty', badge: null,
+            name: 'Pavlova tortička',
+            desc: 'Mini pavlova s chrumkavou pusinkou, šľahačkou a sezónnym ovocím. Vzdušná a ľahká.',
+            price: 3.80,
+            img: 'https://images.unsplash.com/photo-1464305795204-6f5bbfc7fb81?q=80&w=600'
+        },
+        {
+            id: 'veternik', cat: 'dezerty', badge: 'Bestseller',
+            name: 'Veterník',
+            desc: 'Tradičný veterník z odpalovaného cesta plnený karamelovou šľahačkou a politý čokoládou.',
+            price: 3.50,
+            img: 'https://images.unsplash.com/photo-1483695028939-5bb13f8648b0?q=80&w=600'
+        },
+        {
+            id: 'tartaletka', cat: 'dezerty', badge: null,
+            name: 'Tartaletka',
+            desc: 'Krehká tartaletka s čokoládovou alebo ovocnou náplňou. Výber podľa dnešnej ponuky.',
+            price: 2.90,
+            img: 'https://images.unsplash.com/photo-1519915028121-7d3463d20b13?q=80&w=600'
+        },
+        {
+            id: 'coko-malina-torta', cat: 'dezerty', badge: null,
+            name: 'Čoko-malina torta',
+            desc: 'Plátok belgickej čokoládovej torty s malinovým konfit a zrkadlovou glazúrou.',
+            price: 3.90,
+            img: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=600'
+        },
+        {
+            id: 'ovocny-rez', cat: 'dezerty', badge: null,
+            name: 'Ovocný rez',
+            desc: 'Vrstevnatý piškótový rez so šľahačkovým krémom a čerstvým sezónnym ovocím.',
+            price: 3.20,
+            img: 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?q=80&w=600'
+        },
+        {
+            id: 'cupcake', cat: 'dezerty', badge: null,
+            name: 'Cupcake',
+            desc: 'Zdobené piškótové košíčky s maslovým krémom. Každý deň iná dekorácia a príchuť.',
+            price: 2.80,
+            img: 'https://images.unsplash.com/photo-1486427944299-d1955d23e34d?q=80&w=600'
+        },
+        {
+            id: 'makronka', cat: 'dezerty', badge: null,
+            name: 'Makrónka',
+            desc: 'Francúzsky macaron s mandľovými škrupinami a ganache náplňou. Predávaný po kusu.',
+            price: 1.50,
+            img: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?q=80&w=600'
+        },
+        // COFFEE & BEVERAGES
+        {
+            id: 'espresso', cat: 'kavaren', badge: null,
+            name: 'Espresso',
+            desc: 'Klasické espresso z čerstvo mletej zrnovej kávy. Intenzívne, plné, s krémovým crema.',
+            price: 1.80,
+            img: 'https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?q=80&w=600'
+        },
+        {
+            id: 'espresso-lungo', cat: 'kavaren', badge: null,
+            name: 'Espresso Lungo',
+            desc: 'Predĺžené espresso s jemnejšou intenzitou a väčším objemom — ideálne na pomalé ráno.',
+            price: 1.80,
+            img: 'https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?q=80&w=600'
+        },
+        {
+            id: 'espresso-doppio', cat: 'kavaren', badge: null,
+            name: 'Espresso Doppio',
+            desc: 'Dvojité espresso pre tých, čo potrebujú silnejší štart dňa.',
+            price: 3.00,
+            img: 'https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?q=80&w=600'
+        },
+        {
+            id: 'cappuccino', cat: 'kavaren', badge: 'Obľúbené',
+            name: 'Cappuccino',
+            desc: 'Espresso s napeneným mliekom — dokonalá rovnováha sily kávy a zamatovej peny.',
+            price: 2.40,
+            img: 'https://images.unsplash.com/photo-1534778101976-62847782c213?q=80&w=600'
+        },
+        {
+            id: 'latte', cat: 'kavaren', badge: null,
+            name: 'Latte Macchiato',
+            desc: 'Vrstvené latte s espressom, teplým mliekom a jemnou mliečnou penou. Krásne na pohľad.',
+            price: 2.60,
+            img: 'https://images.unsplash.com/photo-1534778101976-62847782c213?q=80&w=600'
+        },
+        {
+            id: 'horuca-cokolada', cat: 'kavaren', badge: null,
+            name: 'Horúca čokoláda',
+            desc: 'Hustá horúca čokoláda z belgickej čokolády. Ideálna k dezertom v chladnejšom dni.',
+            price: 2.90,
+            img: 'https://images.unsplash.com/photo-1517578239113-b03992dcdd25?q=80&w=600'
+        },
+        {
+            id: 'caj', cat: 'kavaren', badge: null,
+            name: 'Čaj z čerstvej mäty / zázvoru',
+            desc: 'Čaj lúhovaný zo čerstvej mäty alebo zázvoru — prírodný a osviežujúci.',
+            price: 2.50,
+            img: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?q=80&w=600'
+        },
+        {
+            id: 'limonada', cat: 'kavaren', badge: 'Novinka',
+            name: 'Domáca limonáda',
+            desc: 'Domáca limonáda z čerstvých citrusov s mätou a cukrovým sirupom. 0,5 l.',
+            price: 3.50,
+            img: 'https://images.unsplash.com/photo-1621263764928-df1444c5e859?q=80&w=600'
+        },
+    ];
+
+    let cart = {};
+
+    // ══════════════════════════════════════
+    //  FORMAT PRICE
+    // ══════════════════════════════════════
+    function formatPrice(p) {
+        return p.toFixed(2).replace('.', ',') + ' €';
+    }
+
+    // ══════════════════════════════════════
+    //  RENDER MENU
+    // ══════════════════════════════════════
+    function renderMenu() {
+        const grid = document.getElementById('menuGrid');
+        grid.innerHTML = '';
+        menuData.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            card.dataset.category = item.cat;
+            card.innerHTML = `
+                <div class="product-img-wrap" style="background-image:url('${item.img}')">
+                    ${item.badge ? `<div class="product-badge">${item.badge}</div>` : ''}
+                </div>
+                <div class="product-info">
+                    <h3>${item.name}</h3>
+                    <p>${item.desc}</p>
+                    <div class="product-meta">
+                        <button class="add-btn" id="addbtn-${item.id}" onclick="addToCart('${item.id}')">
+                            <span>+ Pridať</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    // ══════════════════════════════════════
+    //  FILTER MENU
+    // ══════════════════════════════════════
+    function filterMenu(cat, el) {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+        document.querySelectorAll('.product-card').forEach(card => {
+            card.style.display = (cat === 'all' || card.dataset.category === cat) ? 'flex' : 'none';
+        });
+    }
+
+    // ══════════════════════════════════════
+    //  CART OPERATIONS
+    // ══════════════════════════════════════
+    function addToCart(id) {
+        const item = menuData.find(i => i.id === id);
+        if (!item) return;
+        cart[id] = (cart[id] || 0) + 1;
+        updateCartBadge();
+        showToast(`✓  ${item.name} pridaný do košíka`);
+        const btn = document.getElementById(`addbtn-${id}`);
+        if (btn) {
+            btn.classList.add('added');
+            btn.querySelector('span').textContent = '✓ Pridané';
+            setTimeout(() => {
+                btn.classList.remove('added');
+                btn.querySelector('span').textContent = '+ Pridať';
+            }, 1400);
+        }
+    }
+
+    function changeQty(id, delta) {
+        if (!cart[id]) return;
+        cart[id] += delta;
+        if (cart[id] <= 0) delete cart[id];
+        updateCartBadge();
+        renderCart();
+    }
+
+    function removeFromCart(id) {
+        delete cart[id];
+        updateCartBadge();
+        renderCart();
+    }
+
+    function getCartCount() {
+        return Object.values(cart).reduce((a, b) => a + b, 0);
+    }
+
+    function getCartTotal() {
+        return Object.entries(cart).reduce((acc, [id, qty]) => {
+            const item = menuData.find(i => i.id === id);
+            return acc + (item ? item.price * qty : 0);
+        }, 0);
+    }
+
+    function updateCartBadge() {
+        const badge = document.getElementById('cartBadge');
+        const count = getCartCount();
+        badge.textContent = count;
+        badge.classList.add('bump');
+        setTimeout(() => badge.classList.remove('bump'), 250);
+    }
+
+    // ══════════════════════════════════════
+    //  RENDER CART
+    // ══════════════════════════════════════
+    function renderCart() {
+        const container = document.getElementById('cart-inner');
+
+        if (getCartCount() === 0) {
+            container.innerHTML = `
+                <div class="empty-cart">
+                    <div class="empty-cart-icon">🧺</div>
+                    <h3>Košík je prázdny</h3>
+                    <p>Prejdite do menu a vyberte si čerstvé pečivo.</p>
+                    <button onclick="switchTab('menu')">Zobraziť menu →</button>
+                </div>`;
+            return;
+        }
+
+        const cartItems = Object.entries(cart).map(([id, qty]) => {
+            const item = menuData.find(i => i.id === id);
+            return { ...item, qty };
+        });
+
+        const count = getCartCount();
+
+        const itemsHtml = cartItems.map(item => `
+            <div class="cart-item">
+                <div>
+                    <div class="cart-item-name">${item.name}</div>
+                </div>
+                <div class="cart-item-right">
+                    <div class="qty-controls">
+                        <button class="qty-btn" onclick="changeQty('${item.id}', -1)">−</button>
+                        <span class="qty-num">${item.qty}</span>
+                        <button class="qty-btn" onclick="changeQty('${item.id}', 1)">+</button>
+                    </div>
+                    <button class="remove-btn" onclick="removeFromCart('${item.id}')">Odstrániť</button>
+                </div>
+            </div>`).join('');
+
+        const summaryRows = cartItems.map(i => `
+            <div class="summary-row">
+                <span>${i.name}</span>
+                <span>×${i.qty}</span>
+            </div>`).join('');
+
+        container.innerHTML = `
+            <div class="cart-layout">
+                <div>
+                    <div class="cart-header">
+                        <h2>Váš košík</h2>
+                        <div class="cart-count-label">${count} položk${count === 1 ? 'a' : count < 5 ? 'y' : 'í'}</div>
+                    </div>
+                    <div>${itemsHtml}</div>
+                </div>
+                <div class="order-panel">
+                    <div class="order-panel-title">Prehľad objednávky</div>
+                    ${summaryRows}
+                    <button class="checkout-whatsapp" onclick="sendWhatsApp()">
+                        <span>💬</span>
+                        <span>Objednať cez WhatsApp</span>
+                    </button>
+                    <div class="checkout-note">
+                        Budete presmerovaní do WhatsApp<br>
+                        na potvrdenie a termín vyzdvihnutia
+                    </div>
+                </div>
+            </div>`;
+    }
+
+    // ══════════════════════════════════════
+    //  WHATSAPP ORDER
+    // ══════════════════════════════════════
+    function sendWhatsApp() {
+        const phone = '421489012345'; // BB branch number
+        let msg = 'Dobrý deň, Pekáreň Alea Banská Bystrica 👋 Chcem si zadať objednávku:\n\n';
+        Object.entries(cart).forEach(([id, qty]) => {
+            const item = menuData.find(i => i.id === id);
+            if (item) msg += `• ${item.name} (${qty} ks)\n`;
+        });
+        msg += `\nProsím potvrďte dostupnosť a čas vyzdvihnutia. Ďakujem!`;
+        window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    // ══════════════════════════════════════
+    //  TAB NAVIGATION
+    // ══════════════════════════════════════
+    function switchTab(tabName, btnEl) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('active-tab'));
+
+        const target = document.getElementById(`${tabName}-tab`);
+        if (target) target.classList.add('active');
+
+        const navMap = { home: 'nav-home', menu: 'nav-menu', cart: 'nav-cart', contact: 'nav-contact' };
+        const activeBtn = document.getElementById(navMap[tabName]);
+        if (activeBtn) activeBtn.classList.add('active-tab');
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        if (tabName === 'cart') renderCart();
+    }
+
+    // ══════════════════════════════════════
+    //  TOAST
+    // ══════════════════════════════════════
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2800);
+    }
+
+    // ══════════════════════════════════════
+    //  CONTACT FORM
+    // ══════════════════════════════════════
+    function submitContact() {
+        const name = document.getElementById('cName').value.trim();
+        const contact = document.getElementById('cContact').value.trim();
+        const msg = document.getElementById('cMessage').value.trim();
+        if (!name || !contact || !msg) {
+            alert('Prosím vyplňte meno, kontakt a správu.');
+            return;
+        }
+        document.getElementById('contactSuccess').style.display = 'block';
+        document.getElementById('cName').value = '';
+        document.getElementById('cContact').value = '';
+        document.getElementById('cSubject').value = '';
+        document.getElementById('cMessage').value = '';
+        setTimeout(() => { document.getElementById('contactSuccess').style.display = 'none'; }, 6000);
+    }
+
+    // ══════════════════════════════════════
+    //  MOBILE NAV
+    // ══════════════════════════════════════
+    function openMobileNav() { document.getElementById('mobileNav').classList.add('open'); }
+    function closeMobileNav() { document.getElementById('mobileNav').classList.remove('open'); }
+
+    // ══════════════════════════════════════
+    //  HEADER SCROLL ELEVATION
+    // ══════════════════════════════════════
+    window.addEventListener('scroll', () => {
+        document.getElementById('mainHeader').classList.toggle('elevated', window.scrollY > 40);
+    });
+
+    // ══════════════════════════════════════
+    //  HIGHLIGHT TODAY IN HOURS
+    // ══════════════════════════════════════
+    const dayMap = [null, 'h-mon', 'h-tue', 'h-wed', 'h-thu', 'h-fri', 'h-sat'];
+    const sunRow = document.getElementById('h-sun');
+    const day = new Date().getDay();
+    if (day === 0 && sunRow) sunRow.classList.add('today');
+    else if (dayMap[day]) {
+        const row = document.getElementById(dayMap[day]);
+        if (row) row.classList.add('today');
+    }
+
+    // ══════════════════════════════════════
+    //  INIT
+    // ══════════════════════════════════════
+    renderMenu();
+
+    </script>
+</body>
+</html>
